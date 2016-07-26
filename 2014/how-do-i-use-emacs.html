@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://roteiv.com/about/index.html">
+<meta name="description" content="Emacs is a powerful programme editor.
+In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How do i use Emacs">
+<meta property="og:url" content="http://roteiv.com/2014/how-do-i-use-emacs.html">
 <meta property="og:site_name" content="Roteiv Talking">
-<meta property="og:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
+<meta property="og:description" content="Emacs is a powerful programme editor.
+In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
 <meta property="og:updated_time" content="2016-07-25T10:19:31.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
+<meta name="twitter:title" content="How do i use Emacs">
+<meta name="twitter:description" content="Emacs is a powerful programme editor.
+In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
 
 
 
@@ -117,9 +117,9 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
 
 
-  <link rel="canonical" href="http://roteiv.com/about/"/>
+  <link rel="canonical" href="http://roteiv.com/2014/how-do-i-use-emacs.html"/>
 
-  <title> about | Roteiv Talking </title>
+  <title> How do i use Emacs | Roteiv Talking </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -249,7 +249,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
             
             
               
-                about
+                How do i use Emacs
               
             
           </h1>
@@ -261,11 +261,30 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-06T10:17:07+08:00" content="2015-11-06">
-              2015-11-06
+            <time itemprop="dateCreated" datetime="2014-12-29T10:41:58+08:00" content="2014-12-29">
+              2014-12-29
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/emacs/" itemprop="url" rel="index">
+                    <span itemprop="name">emacs</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -289,8 +308,20 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
       
 
       
-        <h1 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h1><p><em>Name</em>: Vietor Liu<br><em>Email</em>: try it in gmail, “point” is the point.</p>
-<h1 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h1><p><em>Github</em>: <a href="https://github.com/vietor" target="_blank" rel="external">https://github.com/vietor</a><br><em>Twitter</em>: <a href="https://twitter.com/vietorliu" target="_blank" rel="external">https://twitter.com/vietorliu</a></p>
+        <p><strong>Emacs</strong> is a powerful programme editor.</p>
+<p>In my job, I used <strong>js2-mode</strong> for NodeJS RESTful projects and used <strong>markdown-mode</strong> for its documents.<br>Before i used Emacs, I tried VIM, Another programme editor. At last i did not insisted on using it, Beause it’s ugly customized, Just <strong>config file</strong> Not <strong>development script</strong>.</p>
+<p>I shared my <a href="https://github.com/vietor/emacs.d" target="_blank" rel="external">.emacs.d</a> on github, it contained some script from <a href="https://github.com/purcell/emacs.d" target="_blank" rel="external">purcell’s scripts</a>.</p>
+<h3 id="Customized-Environment"><a href="#Customized-Environment" class="headerlink" title="Customized Environment"></a>Customized Environment</h3><p>I include some <strong>script</strong> from <a href="http://melpa.org" target="_blank" rel="external">Melpa</a>, and customized them for <strong>myself</strong>.<br>The script example in my <strong>.emacs.d</strong>.</p>
+<p>Example:<br>Diable markdown-mode’s auto-indent and trailing whitespace clean<br><em>init-markdown.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(<span class="name">add-hook</span> 'markdown-mode-hook</div><div class="line">          (<span class="name">lambda</span> ()</div><div class="line">            (<span class="name">setq</span> retain-trailing-whitespace <span class="literal">t</span>)</div><div class="line">            (<span class="name">set</span> (<span class="name">make-local-variable</span> 'electric-indent-mode) <span class="literal">nil</span>)</div><div class="line">            (<span class="name">define-key</span> markdown-mode-map (<span class="name">kbd</span> <span class="string">"RET"</span>) 'newline)))</div></pre></td></tr></table></figure></p>
+<p>Where is the variable ‘retain-trailing-whitespace’ defined?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> retain-trailing-whitespace <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'retain-trailing-whitespace)</div><div class="line"></div><div class="line">(<span class="name">defadvice</span> delete-trailing-whitespace (<span class="name">around</span> retain activate)</div><div class="line">  (<span class="name">unless</span> retain-trailing-whitespace</div><div class="line">    ad-do-it))</div></pre></td></tr></table></figure></p>
+<p>Where is the function ‘delete-trailing-whitespace’ used?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> buffer-indent-function <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'buffer-indent-function)</div><div class="line"></div><div class="line">(<span class="name">defun</span> indent-current-buffer ()</div><div class="line">  (<span class="name">interactive</span>)</div><div class="line">  (<span class="name">if</span> (<span class="name">functionp</span> buffer-indent-function)</div><div class="line">      (<span class="name">funcall</span> buffer-indent-function)</div><div class="line">    (<span class="name">save-excursion</span></div><div class="line">      (<span class="name">delete-trailing-whitespace</span>)</div><div class="line">      (<span class="name">indent-region</span> (<span class="name">point-min</span>) (<span class="name">point-max</span>)))))</div></pre></td></tr></table></figure></p>
+<p>Is the function ‘indent-current-buffer’ bind any key?<br><em>init-keybind.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(<span class="name">global-set-key</span> (<span class="name">kbd</span> <span class="string">"&lt;f12&gt;"</span>)   'indent-current-buffer)</div></pre></td></tr></table></figure></p>
+<p><strong>Yes! When i want, maybe i script it. LOL</strong></p>
+<h3 id="Multiple-instances-for-multiple-project"><a href="#Multiple-instances-for-multiple-project" class="headerlink" title="Multiple instances for multiple project"></a>Multiple instances for multiple project</h3><p>In my script, I add a command line parameter ‘-project’ for specified directory as project.<br>In project directory, It has a ‘.emacs.p’ directory for store specified files, like: session, desktop etc.</p>
+<p>Command line usage<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emacs -project ~/work/<span class="built_in">test</span></div></pre></td></tr></table></figure></p>
+<p>I created a named ‘OpenInEmnacsAsProject’ script for Natilus’s right menu in Linux.<br>I modified registory for right menu in Windows.</p>
+<h3 id="Writing-something"><a href="#Writing-something" class="headerlink" title="Writing something"></a>Writing something</h3><p>A great programme editor has two features: awesome to use, awesome to customize.</p>
+<p>Using Emacs for coding.<br>Using Emacs for document.<br>Using Emacs for bloging.<br>etc.</p>
 
       
     </div>
@@ -312,6 +343,20 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
     <footer class="post-footer">
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/how-easy-to-setup-hdfs-cluster.html" rel="prev" title="How easy to setup HDFS cluster">
+                How easy to setup HDFS cluster <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -422,7 +467,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Profile"><span class="nav-number">1.</span> <span class="nav-text">Profile</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Links"><span class="nav-number">2.</span> <span class="nav-text">Links</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Customized-Environment"><span class="nav-number">1.</span> <span class="nav-text">Customized Environment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiple-instances-for-multiple-project"><span class="nav-number">2.</span> <span class="nav-text">Multiple instances for multiple project</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Writing-something"><span class="nav-number">3.</span> <span class="nav-text">Writing something</span></a></li></ol></div>
             
           </div>
         </section>

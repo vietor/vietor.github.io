@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="technology" />
+  <meta name="keywords" content="nodejs,七牛," />
 
 
 
@@ -84,19 +84,16 @@
 
 
 
-<meta name="description" content="Emacs is a powerful programme editor.
-In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
+<meta name="description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546var fs = require(&apos;fs&apos;),    path = require(&apos;path&apos;),    crypto = require(&apos;crypto&apos;);var xbase64 = require(&apos;xbase64&apos;);var">
 <meta property="og:type" content="article">
-<meta property="og:title" content="How do i use Emacs">
-<meta property="og:url" content="http://roteiv.com/2014/2014-12-29-how-do-i-use-emacs.html">
+<meta property="og:title" content="NodeJS中直接使用POST上传文件到七牛">
+<meta property="og:url" content="http://roteiv.com/2016/nodejs-post-file-qiniu.html">
 <meta property="og:site_name" content="Roteiv Talking">
-<meta property="og:description" content="Emacs is a powerful programme editor.
-In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
-<meta property="og:updated_time" content="2016-07-25T10:19:31.000Z">
+<meta property="og:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546var fs = require(&apos;fs&apos;),    path = require(&apos;path&apos;),    crypto = require(&apos;crypto&apos;);var xbase64 = require(&apos;xbase64&apos;);var">
+<meta property="og:updated_time" content="2016-07-26T01:42:09.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="How do i use Emacs">
-<meta name="twitter:description" content="Emacs is a powerful programme editor.
-In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode for its documents.Before i used Emacs, I tried VIM, Another programme editor. At las">
+<meta name="twitter:title" content="NodeJS中直接使用POST上传文件到七牛">
+<meta name="twitter:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546var fs = require(&apos;fs&apos;),    path = require(&apos;path&apos;),    crypto = require(&apos;crypto&apos;);var xbase64 = require(&apos;xbase64&apos;);var">
 
 
 
@@ -117,9 +114,9 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
 
 
 
-  <link rel="canonical" href="http://roteiv.com/2014/2014-12-29-how-do-i-use-emacs.html"/>
+  <link rel="canonical" href="http://roteiv.com/2016/nodejs-post-file-qiniu.html"/>
 
-  <title> How do i use Emacs | Roteiv Talking </title>
+  <title> NodeJS中直接使用POST上传文件到七牛 | Roteiv Talking </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -249,7 +246,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
             
             
               
-                How do i use Emacs
+                NodeJS中直接使用POST上传文件到七牛
               
             
           </h1>
@@ -261,8 +258,8 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2014-12-29T10:41:58+08:00" content="2014-12-29">
-              2014-12-29
+            <time itemprop="dateCreated" datetime="2016-04-04T10:10:00+08:00" content="2016-04-04">
+              2016-04-04
             </time>
           </span>
 
@@ -275,8 +272,8 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/emacs/" itemprop="url" rel="index">
-                    <span itemprop="name">emacs</span>
+                  <a href="/categories/program/" itemprop="url" rel="index">
+                    <span itemprop="name">program</span>
                   </a>
                 </span>
 
@@ -308,20 +305,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
       
 
       
-        <p><strong>Emacs</strong> is a powerful programme editor.</p>
-<p>In my job, I used <strong>js2-mode</strong> for NodeJS RESTful projects and used <strong>markdown-mode</strong> for its documents.<br>Before i used Emacs, I tried VIM, Another programme editor. At last i did not insisted on using it, Beause it’s ugly customized, Just <strong>config file</strong> Not <strong>development script</strong>.</p>
-<p>I shared my <a href="https://github.com/vietor/emacs.d" target="_blank" rel="external">.emacs.d</a> on github, it contained some script from <a href="https://github.com/purcell/emacs.d" target="_blank" rel="external">purcell’s scripts</a>.</p>
-<h3 id="Customized-Environment"><a href="#Customized-Environment" class="headerlink" title="Customized Environment"></a>Customized Environment</h3><p>I include some <strong>script</strong> from <a href="http://melpa.org" target="_blank" rel="external">Melpa</a>, and customized them for <strong>myself</strong>.<br>The script example in my <strong>.emacs.d</strong>.</p>
-<p>Example:<br>Diable markdown-mode’s auto-indent and trailing whitespace clean<br><em>init-markdown.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(<span class="name">add-hook</span> 'markdown-mode-hook</div><div class="line">          (<span class="name">lambda</span> ()</div><div class="line">            (<span class="name">setq</span> retain-trailing-whitespace <span class="literal">t</span>)</div><div class="line">            (<span class="name">set</span> (<span class="name">make-local-variable</span> 'electric-indent-mode) <span class="literal">nil</span>)</div><div class="line">            (<span class="name">define-key</span> markdown-mode-map (<span class="name">kbd</span> <span class="string">"RET"</span>) 'newline)))</div></pre></td></tr></table></figure></p>
-<p>Where is the variable ‘retain-trailing-whitespace’ defined?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> retain-trailing-whitespace <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'retain-trailing-whitespace)</div><div class="line"></div><div class="line">(<span class="name">defadvice</span> delete-trailing-whitespace (<span class="name">around</span> retain activate)</div><div class="line">  (<span class="name">unless</span> retain-trailing-whitespace</div><div class="line">    ad-do-it))</div></pre></td></tr></table></figure></p>
-<p>Where is the function ‘delete-trailing-whitespace’ used?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> buffer-indent-function <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'buffer-indent-function)</div><div class="line"></div><div class="line">(<span class="name">defun</span> indent-current-buffer ()</div><div class="line">  (<span class="name">interactive</span>)</div><div class="line">  (<span class="name">if</span> (<span class="name">functionp</span> buffer-indent-function)</div><div class="line">      (<span class="name">funcall</span> buffer-indent-function)</div><div class="line">    (<span class="name">save-excursion</span></div><div class="line">      (<span class="name">delete-trailing-whitespace</span>)</div><div class="line">      (<span class="name">indent-region</span> (<span class="name">point-min</span>) (<span class="name">point-max</span>)))))</div></pre></td></tr></table></figure></p>
-<p>Is the function ‘indent-current-buffer’ bind any key?<br><em>init-keybind.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(<span class="name">global-set-key</span> (<span class="name">kbd</span> <span class="string">"&lt;f12&gt;"</span>)   'indent-current-buffer)</div></pre></td></tr></table></figure></p>
-<p><strong>Yes! When i want, maybe i script it. LOL</strong></p>
-<h3 id="Multiple-instances-for-multiple-project"><a href="#Multiple-instances-for-multiple-project" class="headerlink" title="Multiple instances for multiple project"></a>Multiple instances for multiple project</h3><p>In my script, I add a command line parameter ‘-project’ for specified directory as project.<br>In project directory, It has a ‘.emacs.p’ directory for store specified files, like: session, desktop etc.</p>
-<p>Command line usage<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emacs -project ~/work/<span class="built_in">test</span></div></pre></td></tr></table></figure></p>
-<p>I created a named ‘OpenInEmnacsAsProject’ script for Natilus’s right menu in Linux.<br>I modified registory for right menu in Windows.</p>
-<h3 id="Writing-something"><a href="#Writing-something" class="headerlink" title="Writing something"></a>Writing something</h3><p>A great programme editor has two features: awesome to use, awesome to customize.</p>
-<p>Using Emacs for coding.<br>Using Emacs for document.<br>Using Emacs for bloging.<br>etc.</p>
+        <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>),</div><div class="line">    path = <span class="built_in">require</span>(<span class="string">'path'</span>),</div><div class="line">    crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</div><div class="line"><span class="keyword">var</span> xbase64 = <span class="built_in">require</span>(<span class="string">'xbase64'</span>);</div><div class="line"><span class="keyword">var</span> request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hmac_sha1</span>(<span class="params">content, secret</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> crypto.createHmac(<span class="string">'sha1'</span>, secret).update(content).digest();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">uploadToQiniu</span>(<span class="params">config, filename, filepath, callback</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!filename)</div><div class="line">        filename = path.basename(filepath);</div><div class="line">    <span class="keyword">var</span> putPolicy = &#123;</div><div class="line">        scope: config.bucket + <span class="string">':'</span> + filename,</div><div class="line">        deadline: <span class="built_in">Math</span>.floor(<span class="built_in">Date</span>.now() / <span class="number">1000</span>) + <span class="number">3600</span>,</div><div class="line">        returnBody: <span class="string">"&#123;&#125;"</span></div><div class="line">    &#125;;</div><div class="line">    <span class="keyword">var</span> encodedPutPolicy = xbase64.urlencode(<span class="built_in">JSON</span>.stringify(putPolicy));</div><div class="line">    <span class="keyword">var</span> encodedSign = xbase64.urlencode(hmac_sha1(encodedPutPolicy, config.secretKey));</div><div class="line">    <span class="keyword">var</span> formData = &#123;</div><div class="line">        key: filename,</div><div class="line">        file: fs.createReadStream(filepath),</div><div class="line">        token: config.accessKey + <span class="string">':'</span> + encodedSign + <span class="string">':'</span> + encodedPutPolicy</div><div class="line">    &#125;;</div><div class="line">    request.post(&#123;</div><div class="line">        url: config.url,</div><div class="line">        formData: formData</div><div class="line">    &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, resp, body</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (err)</div><div class="line">            callback(err);</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (resp.statusCode == <span class="number">200</span>)</div><div class="line">            callback(<span class="literal">null</span>);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            callback(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'status: '</span> + resp.statusCode) + <span class="string">', message: '</span> + <span class="built_in">JSON</span>.parse(body).error);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">uploadToQiniu(&#123;</div><div class="line">    url: <span class="string">'http://upload.qiniu.com/'</span>,</div><div class="line">    bucket: <span class="string">'空间名'</span>,</div><div class="line">    accessKey: <span class="string">'访问KEY (AK)'</span>,</div><div class="line">    secretKey: <span class="string">'安全KEY (SK)'</span></div><div class="line">&#125;, <span class="string">''</span>, <span class="string">'d:\\dollar.jpg'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(err);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -342,17 +326,29 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/nodejs/" rel="tag">#nodejs</a>
+          
+            <a href="/tags/七牛/" rel="tag">#七牛</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2015/how-easy-to-setup-yarn-cluster.html" rel="next" title="How easy to setup YARN cluster">
+                <i class="fa fa-chevron-left"></i> How easy to setup YARN cluster
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/2015-04-17-how-easy-to-setup-hdfs-cluster.html" rel="prev" title="How easy to setup HDFS cluster">
-                How easy to setup HDFS cluster <i class="fa fa-chevron-right"></i>
+              <a href="/2016/nodejs-post-file-aliyun.html" rel="prev" title="NodeJS中直接使用POST上传文件到阿里云">
+                NodeJS中直接使用POST上传文件到阿里云 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -421,7 +417,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -429,7 +425,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -438,7 +434,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -467,7 +463,7 @@ In my job, I used js2-mode for NodeJS RESTful projects and used markdown-mode fo
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Customized-Environment"><span class="nav-number">1.</span> <span class="nav-text">Customized Environment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiple-instances-for-multiple-project"><span class="nav-number">2.</span> <span class="nav-text">Multiple instances for multiple project</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Writing-something"><span class="nav-number">3.</span> <span class="nav-text">Writing something</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
         </section>

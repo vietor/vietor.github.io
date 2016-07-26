@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="technology" />
+  <meta name="keywords" content="spark," />
 
 
 
@@ -84,19 +84,31 @@
 
 
 
-<meta name="description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://roteiv.com/about/index.html">
+<meta name="description" content="背景介绍RDD提供的对象持久化方法
+cache()将对象存储在内存中。
+persist(StorageLevel)通过StorageLevel参数指定的行为存储对象。
+unpersist()释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。
+StorageLevel场景MEMORY_ONLY对象存储在内存中，如果内存不足将出现OutOfMemory的错误。
+MEMORY_AND_DISK">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解StorageLevel在Spark中的使用场景">
+<meta property="og:url" content="http://roteiv.com/2016/storagelevel-in-spark.html">
 <meta property="og:site_name" content="Roteiv Talking">
-<meta property="og:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
-<meta property="og:updated_time" content="2016-07-25T10:19:31.000Z">
+<meta property="og:description" content="背景介绍RDD提供的对象持久化方法
+cache()将对象存储在内存中。
+persist(StorageLevel)通过StorageLevel参数指定的行为存储对象。
+unpersist()释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。
+StorageLevel场景MEMORY_ONLY对象存储在内存中，如果内存不足将出现OutOfMemory的错误。
+MEMORY_AND_DISK">
+<meta property="og:updated_time" content="2016-07-26T01:32:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
+<meta name="twitter:title" content="理解StorageLevel在Spark中的使用场景">
+<meta name="twitter:description" content="背景介绍RDD提供的对象持久化方法
+cache()将对象存储在内存中。
+persist(StorageLevel)通过StorageLevel参数指定的行为存储对象。
+unpersist()释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。
+StorageLevel场景MEMORY_ONLY对象存储在内存中，如果内存不足将出现OutOfMemory的错误。
+MEMORY_AND_DISK">
 
 
 
@@ -117,9 +129,9 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
 
 
-  <link rel="canonical" href="http://roteiv.com/about/"/>
+  <link rel="canonical" href="http://roteiv.com/2016/storagelevel-in-spark.html"/>
 
-  <title> about | Roteiv Talking </title>
+  <title> 理解StorageLevel在Spark中的使用场景 | Roteiv Talking </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -249,7 +261,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
             
             
               
-                about
+                理解StorageLevel在Spark中的使用场景
               
             
           </h1>
@@ -261,11 +273,30 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-06T10:17:07+08:00" content="2015-11-06">
-              2015-11-06
+            <time itemprop="dateCreated" datetime="2016-04-08T09:30:08+08:00" content="2016-04-08">
+              2016-04-08
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -289,8 +320,23 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
       
 
       
-        <h1 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h1><p><em>Name</em>: Vietor Liu<br><em>Email</em>: try it in gmail, “point” is the point.</p>
-<h1 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h1><p><em>Github</em>: <a href="https://github.com/vietor" target="_blank" rel="external">https://github.com/vietor</a><br><em>Twitter</em>: <a href="https://twitter.com/vietorliu" target="_blank" rel="external">https://twitter.com/vietorliu</a></p>
+        <h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>RDD提供的对象持久化方法</p>
+<h2 id="cache"><a href="#cache" class="headerlink" title="cache()"></a>cache()</h2><p>将对象存储在<em>内存</em>中。</p>
+<h2 id="persist-StorageLevel"><a href="#persist-StorageLevel" class="headerlink" title="persist(StorageLevel)"></a>persist(StorageLevel)</h2><p>通过<em>StorageLevel</em>参数指定的行为存储对象。</p>
+<h2 id="unpersist"><a href="#unpersist" class="headerlink" title="unpersist()"></a>unpersist()</h2><p>释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。</p>
+<h1 id="StorageLevel场景"><a href="#StorageLevel场景" class="headerlink" title="StorageLevel场景"></a>StorageLevel场景</h1><h2 id="MEMORY-ONLY"><a href="#MEMORY-ONLY" class="headerlink" title="MEMORY_ONLY"></a>MEMORY_ONLY</h2><p>对象存储在<em>内存</em>中，如果内存不足将出现<em>OutOfMemory</em>的错误。</p>
+<h2 id="MEMORY-AND-DISK"><a href="#MEMORY-AND-DISK" class="headerlink" title="MEMORY_AND_DISK"></a>MEMORY_AND_DISK</h2><p>对象存储在<em>内存</em>中，如果内存不足，将数据存放到<em>磁盘</em>上。这是我最常用的方式，因为能够以较低的内存需求来架设Hadoop集群。</p>
+<h2 id="MEMORY-ONLY-SER"><a href="#MEMORY-ONLY-SER" class="headerlink" title="MEMORY_ONLY_SER"></a>MEMORY_ONLY_SER</h2><p>转换为<em>字节数组</em>的对象存储, 相对于<em>MEMORY_ONLY</em>省点空间，多消耗点CPU。</p>
+<h2 id="MEMORY-AND-DISK-SER"><a href="#MEMORY-AND-DISK-SER" class="headerlink" title="MEMORY_AND_DISK_SER"></a>MEMORY_AND_DISK_SER</h2><p>转换为<em>字节数组</em>的对象存储，相对于<em>MEMORY_AND_DISK</em>省点空间，多消耗点CPU。</p>
+<h2 id="DISK-ONLY"><a href="#DISK-ONLY" class="headerlink" title="DISK_ONLY"></a>DISK_ONLY</h2><p>对象存储在<em>磁盘</em>中,只有<em>被处理</em>的对象才会被<em>读入</em>到<em>内存</em>中。这个好省内存，但速度是最慢的了。</p>
+<h1 id="一些经验点"><a href="#一些经验点" class="headerlink" title="一些经验点"></a>一些经验点</h1><h2 id="OutOfMemory错误"><a href="#OutOfMemory错误" class="headerlink" title="OutOfMemory错误"></a>OutOfMemory错误</h2><ul>
+<li>适当加大–executor-memory参数值</li>
+<li>如果可能，尽量仅适用MEMORY_AND_DISK方式存储</li>
+</ul>
+<h2 id="定时清理垃圾文件"><a href="#定时清理垃圾文件" class="headerlink" title="定时清理垃圾文件"></a>定时清理垃圾文件</h2><ul>
+<li>HDFS中<em>用户</em>的/tmp目录，Spark不会主动删除</li>
+<li>Yarn中任务的日志目录，通常日志级别设置为WARN</li>
+</ul>
 
       
     </div>
@@ -311,7 +357,31 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/spark/" rel="tag">#spark</a>
+          
+        </div>
+      
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/groupby-in-elasticsearch.html" rel="next" title="在ElasticSearch中使用类似GroupBy统计功能">
+                <i class="fa fa-chevron-left"></i> 在ElasticSearch中使用类似GroupBy统计功能
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/dump-stack-trace-in-gcc.html" rel="prev" title="用打印程序崩溃时“调用堆栈”的GCC代码">
+                用打印程序崩溃时“调用堆栈”的GCC代码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -422,7 +492,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Profile"><span class="nav-number">1.</span> <span class="nav-text">Profile</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Links"><span class="nav-number">2.</span> <span class="nav-text">Links</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景介绍"><span class="nav-number">1.</span> <span class="nav-text">背景介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#cache"><span class="nav-number">1.1.</span> <span class="nav-text">cache()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#persist-StorageLevel"><span class="nav-number">1.2.</span> <span class="nav-text">persist(StorageLevel)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unpersist"><span class="nav-number">1.3.</span> <span class="nav-text">unpersist()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StorageLevel场景"><span class="nav-number">2.</span> <span class="nav-text">StorageLevel场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MEMORY-ONLY"><span class="nav-number">2.1.</span> <span class="nav-text">MEMORY_ONLY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MEMORY-AND-DISK"><span class="nav-number">2.2.</span> <span class="nav-text">MEMORY_AND_DISK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MEMORY-ONLY-SER"><span class="nav-number">2.3.</span> <span class="nav-text">MEMORY_ONLY_SER</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MEMORY-AND-DISK-SER"><span class="nav-number">2.4.</span> <span class="nav-text">MEMORY_AND_DISK_SER</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DISK-ONLY"><span class="nav-number">2.5.</span> <span class="nav-text">DISK_ONLY</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一些经验点"><span class="nav-number">3.</span> <span class="nav-text">一些经验点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OutOfMemory错误"><span class="nav-number">3.1.</span> <span class="nav-text">OutOfMemory错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时清理垃圾文件"><span class="nav-number">3.2.</span> <span class="nav-text">定时清理垃圾文件</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

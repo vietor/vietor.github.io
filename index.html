@@ -245,8 +245,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/2015-07-31-how-easy-to-setup-yarn-cluster.html" itemprop="url">
-                  How easy to setup YARN cluster
+                <a class="post-title-link" href="/2016/once-remove-redis-unused-keys.html" itemprop="url">
+                  一次清理Redis中多余的Key的操作过程
                 </a>
               
             
@@ -259,8 +259,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-07-31T14:38:47+08:00" content="2015-07-31">
-              2015-07-31
+            <time itemprop="dateCreated" datetime="2016-05-05T16:39:18+08:00" content="2016-05-05">
+              2016-05-05
             </time>
           </span>
 
@@ -308,63 +308,21 @@
       
         
           
-            <p><strong>YARN</strong> is a task execute system for <strong>Hadoop</strong></p>
-<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
-<li>Three installed jdk’s linux server.<br>Demo YARN server ip was 192.168.200.1, 192.168.200.2, 192.168.200.3.<br>Used existing HDFS server ip was 192.168.100.1.</li>
-<li>Download hadoop 2.6.x from <a href="http://hadoop.apache.org/releases.html#Download" target="_blank" rel="external">hadoop.apache.org</a></li>
-<li>Extract hadoop’s package file to /opt and create a symlink name with /opt/hadoop</li>
-<li>Always in /opt/hadoop for working</li>
-</ul>
-<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><h3 id="Global-all-server"><a href="#Global-all-server" class="headerlink" title="Global (all server)"></a>Global (all server)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mkdir /yarn</div><div class="line">$ mkdir /yarn/logs</div></pre></td></tr></table></figure>
+            <p>在我们的一个系统中，使用一个Redis存储所有的Cache数据。后期因为Redis本身占用资源过大，加入一个新的Redis，而原来Redis中只保留了一种种类数据。此时需要将<strong>原Redis</strong>中的不使用的数据进行清理。此文就记录了这样一个过程。</p>
+<h1 id="1-将Redis的rdb文件导出"><a href="#1-将Redis的rdb文件导出" class="headerlink" title="1.将Redis的rdb文件导出"></a>1.将Redis的rdb文件导出</h1><p>通常有两种方案：</p>
 <ul>
-<li>Modify file etc/hadoop/yarn-env.sh</li>
+<li>直接使用copy命令复制dump.rdb文件；</li>
+<li>通过redis-cli的–rdb命令导出。</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">export</span> YARN_LOG_DIR=/yarn/logs</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/core-site.xml</li>
+<h1 id="2-将要删除的Key从rdb中导出来"><a href="#2-将要删除的Key从rdb中导出来" class="headerlink" title="2.将要删除的Key从rdb中导出来"></a>2.将要删除的Key从rdb中导出来</h1><p>需要首先安装<a href="https://github.com/sripathikrishnan/redis-rdb-tools" target="_blank" rel="external">redis-rdb-tools</a>, 可使用pip安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install rdbtools</div></pre></td></tr></table></figure></p>
+<p>将所有<strong>要删除的KEY</strong>导出到csv文件<br><em>我们的场景是排除所有包含kt.usertoken的KEY</em><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rdb --command memory dump.rdb | grep -v <span class="string">"kt.usertoken"</span> &gt; rkeys.csv</div></pre></td></tr></table></figure></p>
+<p>此时生成的CSV文件格式如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">database,<span class="built_in">type</span>,key,size_<span class="keyword">in</span>_bytes,encoding,num_elements,len_largest_element</div><div class="line">0,string,<span class="string">"PREFIX_USER_MSG_912c05fac706a6fa679326e95d188f67_0"</span>,142,string,2,2</div><div class="line">0,string,<span class="string">"PREFIX_USER_MSG_99641fecd9d30a3c07b02836c7a8147f2618cb56_6847"</span>,438,string,287,287</div><div class="line">0,string,<span class="string">"PREFIX_USER_MSG_c0c694ddbec7a82d1755fcd79026260e834a0e29_0"</span>,150,string,2,2</div><div class="line">0,string,<span class="string">"PREFIX_USER_MSG_e246022a79f1fbd52b3dbecef18c51d27a6f3e9f_0"</span>,150,string,2,2</div><div class="line">0,string,<span class="string">"PREFIX_USER_MSG_719bd47ebf34743150b5535d841e9628bc27decd_6851"</span>,153,string,2,2</div></pre></td></tr></table></figure></p>
+<p>将CSV中的KEY字段导出：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed <span class="string">'1d'</span> rkeys.csv | awk <span class="string">'match($0, /\,\"(.*)\"\,/, a) &#123;print a[1]&#125;'</span> &gt; rkeys.txt</div></pre></td></tr></table></figure></p>
+<p>此时生成的rkeys.txt文件中就包含所有的KEY，可通过写一个python程序读此文件完成实际的删除。生成文件内容样例：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">PREFIX_USER_MSG_912c05fac706a6fa679326e95d188f67_0</div><div class="line">PREFIX_USER_MSG_99641fecd9d30a3c07b02836c7a8147f2618cb56_6847</div><div class="line">PREFIX_USER_MSG_c0c694ddbec7a82d1755fcd79026260e834a0e29_0</div><div class="line">PREFIX_USER_MSG_e246022a79f1fbd52b3dbecef18c51d27a6f3e9f_0</div></pre></td></tr></table></figure></p>
+<h1 id="3-操作过程中遇到的一些坑"><a href="#3-操作过程中遇到的一些坑" class="headerlink" title="3.操作过程中遇到的一些坑"></a>3.操作过程中遇到的一些坑</h1><ul>
+<li>使用<a href="https://github.com/Chris00/ocaml-csv" target="_blank" rel="external">csvtool</a>无法操作<strong>大文件</strong>，所以采用awk代替。</li>
+<li>使用bash脚本来读取rkeys.txt进而调用<strong>redis-cli del</strong>来进行KEY的删除很容易出现“特殊字符”问题，所以尽量使用程序来删除。</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.default.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.100.1:8020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">final</span>&gt;</span>true<span class="tag">&lt;/<span class="name">final</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="ResourceManager-192-168-200-1"><a href="#ResourceManager-192-168-200-1" class="headerlink" title="ResourceManager (192.168.200.1)"></a>ResourceManager (192.168.200.1)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /yarn/recovery</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.recovery.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.fs.state-store.uri<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/yarn/recovery<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="NodeManager-192-168-200-2-3"><a href="#NodeManager-192-168-200-2-3" class="headerlink" title="NodeManager (192.168.200.2/3)"></a>NodeManager (192.168.200.2/3)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /yarn/recovery</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml (192.168.200.2)</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>$&#123;yarn.nodemanager.hostname&#125;:8048<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.recovery.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.recovery.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>/yarn/recovery<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>dfs.nodemanager.hostname set real ip address with itself, don’t try the hostname.</p>
-<h2 id="Startup-amp-Shutdown"><a href="#Startup-amp-Shutdown" class="headerlink" title="Startup &amp; Shutdown"></a>Startup &amp; Shutdown</h2><h3 id="ResourceManager"><a href="#ResourceManager" class="headerlink" title="ResourceManager"></a>ResourceManager</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop start resourcemanager</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop stop resourcemanager</div></pre></td></tr></table></figure>
-<h3 id="NodeManager"><a href="#NodeManager" class="headerlink" title="NodeManager"></a>NodeManager</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop start nodemanager</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop stop nodemanager</div></pre></td></tr></table></figure>
-<h2 id="Web-interface"><a href="#Web-interface" class="headerlink" title="Web interface"></a>Web interface</h2><p>Open <a href="http://192.168.200.1:8080" target="_blank" rel="external">http://192.168.200.1:8080</a> in web browser, enjoy it.</p>
 
           
         
@@ -414,8 +372,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/2015-04-17-how-easy-to-setup-hdfs-cluster.html" itemprop="url">
-                  How easy to setup HDFS cluster
+                <a class="post-title-link" href="/2016/simple-setup-zookeeper.html" itemprop="url">
+                  简易安装ZooKeeper服务器
                 </a>
               
             
@@ -428,8 +386,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-04-17T09:38:47+08:00" content="2015-04-17">
-              2015-04-17
+            <time itemprop="dateCreated" datetime="2016-04-27T13:40:00+08:00" content="2016-04-27">
+              2016-04-27
             </time>
           </span>
 
@@ -477,59 +435,35 @@
       
         
           
-            <p><strong>HDFS</strong> is a file store system for <strong>Hadoop</strong></p>
-<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
-<li>Three installed jdk’s linux server.<br>Demo HDFS server ip was 192.168.100.1, 192.168.100.2, 192.168.100.3.</li>
-<li>Download hadoop 2.6.x from <a href="http://hadoop.apache.org/releases.html#Download" target="_blank" rel="external">hadoop.apache.org</a></li>
-<li>Extract hadoop’s package file to /opt and create a symlink name with /opt/hadoop</li>
-<li>Always in /opt/hadoop for working</li>
+            <p><strong>ZooKeeper</strong> 是一个分布式协调系统，曾经是Apache Hadoop的一个子项目。</p>
+<p>当前众多项目通过ZooKeeper来进行集群的实现机制，如Kafka、Hadoop等；使得使用者对ZooKeeper的认识可以类比为一个“数据库”系统。</p>
+<h2 id="环境安装"><a href="#环境安装" class="headerlink" title="环境安装"></a>环境安装</h2><ul>
+<li>一台安装了JDK的linux服务器.  </li>
+<li>下载 3.4.x from <a href="http://zookeeper.apache.org/releases.html#download" target="_blank" rel="external">zookeeper.apache.org</a></li>
+<li>加压zookeeper包到 /opt 目录并创建一个软链接 /opt/zookeeper</li>
+<li>使用使用 /opt/zookeeper 作为操作目录</li>
 </ul>
-<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><h3 id="Global-all-server"><a href="#Global-all-server" class="headerlink" title="Global (all server)"></a>Global (all server)</h3><ul>
-<li>Create target directory</li>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li>创建数据目录</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mkdir /hdfs</div><div class="line">$ mkdir /hdfs/logs</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mkdir /zookeeper</div><div class="line">$ mkdir /zookeeper/data</div><div class="line">$ mkdir /zookeeper/logs</div></pre></td></tr></table></figure>
 <ul>
-<li>Modify file etc/hadoop/hadoop-env.sh</li>
+<li>创建文件 conf/zoo.cfg</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">export</span> JAVA_HOME=&lt;real java home&gt;</div><div class="line"><span class="built_in">export</span> HADOOP_LOG_DIR=/hdfs/logs</div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">tickTime</span>=<span class="number">2000</span></div><div class="line"><span class="attr">dataDir</span>=/zookeeper/data</div><div class="line"><span class="attr">clientPort</span>=<span class="number">2181</span></div></pre></td></tr></table></figure>
 <ul>
-<li>Modify file etc/hadoop/core-site.xml</li>
+<li>修改文件 conf/log4j.properties</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.default.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.100.1:8020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">final</span>&gt;</span>true<span class="tag">&lt;/<span class="name">final</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="Namenode-192-168-100-1"><a href="#Namenode-192-168-100-1" class="headerlink" title="Namenode (192.168.100.1)"></a>Namenode (192.168.100.1)</h3><ul>
-<li>Create target directory</li>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">zookeeper.log.dir=/zookeeper/logs/</div><div class="line">zookeeper.tracelog.dir=/zookeeper/logs/</div></pre></td></tr></table></figure>
+<h2 id="启动与停止"><a href="#启动与停止" class="headerlink" title="启动与停止"></a>启动与停止</h2><ul>
+<li>启动</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /hdfs/name</div><div class="line">$ ./bin/hdfs namenode -format default</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/zkServer.sh start</div></pre></td></tr></table></figure>
 <ul>
-<li>Modify file etc/hadoop/hdfs-site.xml</li>
+<li>停止</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.name.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/hdfs/name<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">final</span>&gt;</span>true<span class="tag">&lt;/<span class="name">final</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.datanode.registration.ip-hostname-check<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.permissions.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="DataNode-192-168-100-2-3"><a href="#DataNode-192-168-100-2-3" class="headerlink" title="DataNode (192.168.100.2/3)"></a>DataNode (192.168.100.2/3)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /hdfs/data</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/hdfs-site.xml (192.168.100.2)</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.datanode.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.100.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.datanode.data.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/hdfs/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">final</span>&gt;</span>true<span class="tag">&lt;/<span class="name">final</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>dfs.datanode.hostname set real ip address with itself, don’t try the hostname.</p>
-<h2 id="Startup-amp-Shutdown"><a href="#Startup-amp-Shutdown" class="headerlink" title="Startup &amp; Shutdown"></a>Startup &amp; Shutdown</h2><h3 id="NameNode"><a href="#NameNode" class="headerlink" title="NameNode"></a>NameNode</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/hadoop-daemon.sh --config ./etc/hadoop --script hdfs start namenode</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/hadoop-daemon.sh --config ./etc/hadoop --script hdfs stop namenode</div></pre></td></tr></table></figure>
-<h3 id="DataNode"><a href="#DataNode" class="headerlink" title="DataNode"></a>DataNode</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/hadoop-daemon.sh --config ./etc/hadoop --script hdfs start datanode</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/hadoop-daemon.sh --config ./etc/hadoop --script hdfs stop datanode</div></pre></td></tr></table></figure>
-<h2 id="Web-interface"><a href="#Web-interface" class="headerlink" title="Web interface"></a>Web interface</h2><p>Open <a href="http://192.168.100.1:50070" target="_blank" rel="external">http://192.168.100.1:50070</a> in web browser, enjoy it.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/zkServer.sh stop</div></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/zkCli.sh</div></pre></td></tr></table></figure>
 
           
         
@@ -579,8 +513,8 @@
             
               
                 
-                <a class="post-title-link" href="/2014/2014-12-29-how-do-i-use-emacs.html" itemprop="url">
-                  How do i use Emacs
+                <a class="post-title-link" href="/2016/dump-stack-trace-in-gcc.html" itemprop="url">
+                  用打印程序崩溃时“调用堆栈”的GCC代码
                 </a>
               
             
@@ -593,8 +527,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2014-12-29T10:41:58+08:00" content="2014-12-29">
-              2014-12-29
+            <time itemprop="dateCreated" datetime="2016-04-08T13:16:28+08:00" content="2016-04-08">
+              2016-04-08
             </time>
           </span>
 
@@ -607,8 +541,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/emacs/" itemprop="url" rel="index">
-                    <span itemprop="name">emacs</span>
+                  <a href="/categories/program/" itemprop="url" rel="index">
+                    <span itemprop="name">program</span>
                   </a>
                 </span>
 
@@ -642,20 +576,273 @@
       
         
           
-            <p><strong>Emacs</strong> is a powerful programme editor.</p>
-<p>In my job, I used <strong>js2-mode</strong> for NodeJS RESTful projects and used <strong>markdown-mode</strong> for its documents.<br>Before i used Emacs, I tried VIM, Another programme editor. At last i did not insisted on using it, Beause it’s ugly customized, Just <strong>config file</strong> Not <strong>development script</strong>.</p>
-<p>I shared my <a href="https://github.com/vietor/emacs.d" target="_blank" rel="external">.emacs.d</a> on github, it contained some script from <a href="https://github.com/purcell/emacs.d" target="_blank" rel="external">purcell’s scripts</a>.</p>
-<h3 id="Customized-Environment"><a href="#Customized-Environment" class="headerlink" title="Customized Environment"></a>Customized Environment</h3><p>I include some <strong>script</strong> from <a href="http://melpa.org" target="_blank" rel="external">Melpa</a>, and customized them for <strong>myself</strong>.<br>The script example in my <strong>.emacs.d</strong>.</p>
-<p>Example:<br>Diable markdown-mode’s auto-indent and trailing whitespace clean<br><em>init-markdown.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(<span class="name">add-hook</span> 'markdown-mode-hook</div><div class="line">          (<span class="name">lambda</span> ()</div><div class="line">            (<span class="name">setq</span> retain-trailing-whitespace <span class="literal">t</span>)</div><div class="line">            (<span class="name">set</span> (<span class="name">make-local-variable</span> 'electric-indent-mode) <span class="literal">nil</span>)</div><div class="line">            (<span class="name">define-key</span> markdown-mode-map (<span class="name">kbd</span> <span class="string">"RET"</span>) 'newline)))</div></pre></td></tr></table></figure></p>
-<p>Where is the variable ‘retain-trailing-whitespace’ defined?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> retain-trailing-whitespace <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'retain-trailing-whitespace)</div><div class="line"></div><div class="line">(<span class="name">defadvice</span> delete-trailing-whitespace (<span class="name">around</span> retain activate)</div><div class="line">  (<span class="name">unless</span> retain-trailing-whitespace</div><div class="line">    ad-do-it))</div></pre></td></tr></table></figure></p>
-<p>Where is the function ‘delete-trailing-whitespace’ used?<br><em>init-extend.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(<span class="name">defvar</span> buffer-indent-function <span class="literal">nil</span>)</div><div class="line">(<span class="name">make-variable-buffer-local</span> 'buffer-indent-function)</div><div class="line"></div><div class="line">(<span class="name">defun</span> indent-current-buffer ()</div><div class="line">  (<span class="name">interactive</span>)</div><div class="line">  (<span class="name">if</span> (<span class="name">functionp</span> buffer-indent-function)</div><div class="line">      (<span class="name">funcall</span> buffer-indent-function)</div><div class="line">    (<span class="name">save-excursion</span></div><div class="line">      (<span class="name">delete-trailing-whitespace</span>)</div><div class="line">      (<span class="name">indent-region</span> (<span class="name">point-min</span>) (<span class="name">point-max</span>)))))</div></pre></td></tr></table></figure></p>
-<p>Is the function ‘indent-current-buffer’ bind any key?<br><em>init-keybind.el</em><br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(<span class="name">global-set-key</span> (<span class="name">kbd</span> <span class="string">"&lt;f12&gt;"</span>)   'indent-current-buffer)</div></pre></td></tr></table></figure></p>
-<p><strong>Yes! When i want, maybe i script it. LOL</strong></p>
-<h3 id="Multiple-instances-for-multiple-project"><a href="#Multiple-instances-for-multiple-project" class="headerlink" title="Multiple instances for multiple project"></a>Multiple instances for multiple project</h3><p>In my script, I add a command line parameter ‘-project’ for specified directory as project.<br>In project directory, It has a ‘.emacs.p’ directory for store specified files, like: session, desktop etc.</p>
-<p>Command line usage<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emacs -project ~/work/<span class="built_in">test</span></div></pre></td></tr></table></figure></p>
-<p>I created a named ‘OpenInEmnacsAsProject’ script for Natilus’s right menu in Linux.<br>I modified registory for right menu in Windows.</p>
-<h3 id="Writing-something"><a href="#Writing-something" class="headerlink" title="Writing something"></a>Writing something</h3><p>A great programme editor has two features: awesome to use, awesome to customize.</p>
-<p>Using Emacs for coding.<br>Using Emacs for document.<br>Using Emacs for bloging.<br>etc.</p>
+            <h2 id="主要代码"><a href="#主要代码" class="headerlink" title="主要代码"></a>主要代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;execinfo.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">signal_dump</span><span class="params">(<span class="keyword">int</span> sig)</span></span></div><div class="line">&#123;</div><div class="line">  FILE* fp;</div><div class="line">	<span class="keyword">time_t</span> curTime;</div><div class="line">	<span class="keyword">struct</span> tm* pTm, xTm;</div><div class="line">	<span class="keyword">void</span>* <span class="built_in">array</span>[<span class="number">20</span>];</div><div class="line">	<span class="keyword">char</span> **strings, filename[<span class="number">1024</span>];</div><div class="line">	<span class="keyword">size_t</span> i, size;</div><div class="line">	<span class="keyword">struct</span> sigaction act, oact;</div><div class="line"></div><div class="line">	time(&amp;curTime);</div><div class="line">	pTm = localtime_r(&amp;curTime, &amp;xTm);</div><div class="line">	<span class="built_in">sprintf</span>(filename, <span class="string">"%04d-%02d-%02d-stackdump.log"</span>, pTm-&gt;tm_year + <span class="number">1900</span>, pTm-&gt;tm_mon + <span class="number">1</span>, pTm-&gt;tm_mday);</div><div class="line">	fp = fopen(filename, <span class="string">"a"</span>);</div><div class="line">	<span class="keyword">if</span>(fp) &#123;</div><div class="line">		<span class="built_in">fprintf</span>(fp, <span class="string">"%02d:%02d:%02d PID[%d] Exception: %s\nStack trace:\n"</span>, pTm-&gt;tm_hour, pTm-&gt;tm_min, pTm-&gt;tm_sec, (<span class="keyword">int</span>)getpid(), strsignal(sig));</div><div class="line">		size = backtrace(<span class="built_in">array</span>, <span class="keyword">sizeof</span>(<span class="built_in">array</span>) / <span class="keyword">sizeof</span>(<span class="built_in">array</span>[<span class="number">0</span>]));</div><div class="line">		strings = backtrace_symbols(<span class="built_in">array</span>, size);</div><div class="line">		<span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; size; i++) &#123;</div><div class="line">			<span class="built_in">fprintf</span>(fp, <span class="string">"%s\n"</span>, strings[i]);</div><div class="line">		&#125;</div><div class="line">		fclose(fp);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="built_in">memset</span>(&amp;act, <span class="number">0</span>, <span class="keyword">sizeof</span>(act));</div><div class="line">	act.sa_handler = SIG_DFL;</div><div class="line">	act.sa_flags = <span class="number">0</span>;</div><div class="line">	sigaction(sig, &amp;act, &amp;oact);</div><div class="line">	raise(sig);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">register_signal_dump</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">size_t</span> i;</div><div class="line">	<span class="keyword">struct</span> sigaction act, oact;</div><div class="line">	<span class="keyword">static</span> <span class="keyword">int</span> signals[] = &#123;SIGSEGV, SIGABRT, SIGBUS, SIGFPE, SIGSTKFLT&#125;;</div><div class="line">	<span class="keyword">static</span> <span class="keyword">int</span> ignore_signals[] = &#123;SIGPIPE&#125;;</div><div class="line"></div><div class="line">	<span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(signals) / <span class="keyword">sizeof</span>(signals[<span class="number">0</span>]); i++) &#123;</div><div class="line">		<span class="built_in">memset</span>(&amp;act, <span class="number">0</span>, <span class="keyword">sizeof</span>(act));</div><div class="line">		act.sa_handler = signal_dump;</div><div class="line">		act.sa_flags = <span class="number">0</span>;</div><div class="line">		sigaction(signals[i], &amp;act, &amp;oact);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(ignore_signals) / <span class="keyword">sizeof</span>(ignore_signals[<span class="number">0</span>]); i++) &#123;</div><div class="line">		<span class="built_in">memset</span>(&amp;act, <span class="number">0</span>, <span class="keyword">sizeof</span>(act));</div><div class="line">		act.sa_handler = SIG_IGN;</div><div class="line">		act.sa_flags = <span class="number">0</span>;</div><div class="line">		sigaction(ignore_signals[i], &amp;act, &amp;oact);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><p>1）一般程序崩溃时会收到SIGSEGV等信号；开始时通过调用<strong>register_signal_dump</strong>完成信号处理注册。<br>2）通过addr2line命令可以进一步获得更多详细信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat 2013-09-12-stackdump.log| grep <span class="string">"\[0x"</span>| awk -F[ <span class="string">'&#123;print $2&#125;'</span>| awk -F] <span class="string">'&#123;print $1&#125;'</span> | xargs addr2line <span class="variable">$1</span> <span class="_">-e</span> &lt;程序文件&gt;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/storagelevel-in-spark.html" itemprop="url">
+                  理解StorageLevel在Spark中的使用场景
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-08T09:30:08+08:00" content="2016-04-08">
+              2016-04-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>RDD提供的对象持久化方法</p>
+<h2 id="cache"><a href="#cache" class="headerlink" title="cache()"></a>cache()</h2><p>将对象存储在<em>内存</em>中。</p>
+<h2 id="persist-StorageLevel"><a href="#persist-StorageLevel" class="headerlink" title="persist(StorageLevel)"></a>persist(StorageLevel)</h2><p>通过<em>StorageLevel</em>参数指定的行为存储对象。</p>
+<h2 id="unpersist"><a href="#unpersist" class="headerlink" title="unpersist()"></a>unpersist()</h2><p>释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。</p>
+<h1 id="StorageLevel场景"><a href="#StorageLevel场景" class="headerlink" title="StorageLevel场景"></a>StorageLevel场景</h1><h2 id="MEMORY-ONLY"><a href="#MEMORY-ONLY" class="headerlink" title="MEMORY_ONLY"></a>MEMORY_ONLY</h2><p>对象存储在<em>内存</em>中，如果内存不足将出现<em>OutOfMemory</em>的错误。</p>
+<h2 id="MEMORY-AND-DISK"><a href="#MEMORY-AND-DISK" class="headerlink" title="MEMORY_AND_DISK"></a>MEMORY_AND_DISK</h2><p>对象存储在<em>内存</em>中，如果内存不足，将数据存放到<em>磁盘</em>上。这是我最常用的方式，因为能够以较低的内存需求来架设Hadoop集群。</p>
+<h2 id="MEMORY-ONLY-SER"><a href="#MEMORY-ONLY-SER" class="headerlink" title="MEMORY_ONLY_SER"></a>MEMORY_ONLY_SER</h2><p>转换为<em>字节数组</em>的对象存储, 相对于<em>MEMORY_ONLY</em>省点空间，多消耗点CPU。</p>
+<h2 id="MEMORY-AND-DISK-SER"><a href="#MEMORY-AND-DISK-SER" class="headerlink" title="MEMORY_AND_DISK_SER"></a>MEMORY_AND_DISK_SER</h2><p>转换为<em>字节数组</em>的对象存储，相对于<em>MEMORY_AND_DISK</em>省点空间，多消耗点CPU。</p>
+<h2 id="DISK-ONLY"><a href="#DISK-ONLY" class="headerlink" title="DISK_ONLY"></a>DISK_ONLY</h2><p>对象存储在<em>磁盘</em>中,只有<em>被处理</em>的对象才会被<em>读入</em>到<em>内存</em>中。这个好省内存，但速度是最慢的了。</p>
+<h1 id="一些经验点"><a href="#一些经验点" class="headerlink" title="一些经验点"></a>一些经验点</h1><h2 id="OutOfMemory错误"><a href="#OutOfMemory错误" class="headerlink" title="OutOfMemory错误"></a>OutOfMemory错误</h2><ul>
+<li>适当加大–executor-memory参数值</li>
+<li>如果可能，尽量仅适用MEMORY_AND_DISK方式存储</li>
+</ul>
+<h2 id="定时清理垃圾文件"><a href="#定时清理垃圾文件" class="headerlink" title="定时清理垃圾文件"></a>定时清理垃圾文件</h2><ul>
+<li>HDFS中<em>用户</em>的/tmp目录，Spark不会主动删除</li>
+<li>Yarn中任务的日志目录，通常日志级别设置为WARN</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/groupby-in-elasticsearch.html" itemprop="url">
+                  在ElasticSearch中使用类似GroupBy统计功能
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-07T14:20:00+08:00" content="2016-04-07">
+              2016-04-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>ElasticSarch</strong>提供了一些基本的聚合统计功能。</p>
+<p><strong>group by</strong>类似的功能，可以使用<strong>aggregations</strong>实现。下面的样例描述了一种通过API调用次数作为<strong>“某类用户行为DAU”</strong>的方法。</p>
+<ul>
+<li><p>数据样本</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"@timestamp"</span>: <span class="string">"2016-03-14T18:41:36+08:00"</span>,</div><div class="line">    <span class="attr">"@version"</span>: <span class="string">"1"</span>,</div><div class="line">    <span class="attr">"@fields"</span>: &#123;</div><div class="line">        <span class="attr">"uri"</span>: <span class="string">"/3/query/first"</span>,</div><div class="line">        <span class="attr">"device_id"</span>: <span class="string">"108ccf09983e5db88a2d5085e0805195f891e449"</span>,</div><div class="line">        <span class="attr">"app_id"</span>: <span class="string">"1000"</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>聚合需求</p>
+</li>
+</ul>
+<p>将uri为“/3/query/first”的请求，统计出不同app_id中独立deivce_id的访问次数</p>
+<ul>
+<li>请求实例</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"size"</span>: <span class="number">0</span>,</div><div class="line">    <span class="attr">"query"</span>: &#123;</div><div class="line">        <span class="attr">"bool"</span>: &#123;</div><div class="line">            <span class="attr">"must"</span>: [</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"term"</span>: &#123;</div><div class="line">                        <span class="attr">"@fields.uri"</span>: <span class="string">"/3/query/first"</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            ]</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"aggregations"</span>: &#123;</div><div class="line">        <span class="attr">"g1"</span>: &#123;</div><div class="line">            <span class="attr">"terms"</span>: &#123;</div><div class="line">                <span class="attr">"field"</span>: <span class="string">"@fields.app_id"</span></div><div class="line">            &#125;,</div><div class="line">            <span class="attr">"aggregations"</span>: &#123;</div><div class="line">                <span class="attr">"g2"</span>: &#123;</div><div class="line">                    <span class="attr">"cardinality"</span>: &#123;</div><div class="line">                        <span class="attr">"field"</span>: <span class="string">"@fields.device_id"</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>返回实例</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"took"</span>: <span class="number">696</span>,</div><div class="line">    <span class="attr">"timed_out"</span>: <span class="literal">false</span>,</div><div class="line">    <span class="attr">"_shards"</span>: &#123;</div><div class="line">        <span class="attr">"total"</span>: <span class="number">6</span>,</div><div class="line">        <span class="attr">"successful"</span>: <span class="number">6</span>,</div><div class="line">        <span class="attr">"failed"</span>: <span class="number">0</span></div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"hits"</span>: &#123;</div><div class="line">        <span class="attr">"total"</span>: <span class="number">26</span>,</div><div class="line">        <span class="attr">"max_score"</span>: <span class="number">0</span>,</div><div class="line">        <span class="attr">"hits"</span>: []</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"aggregations"</span>: &#123;</div><div class="line">        <span class="attr">"g1"</span>: &#123;</div><div class="line">            <span class="attr">"doc_count_error_upper_bound"</span>: <span class="number">0</span>,</div><div class="line">            <span class="attr">"sum_other_doc_count"</span>: <span class="number">0</span>,</div><div class="line">            <span class="attr">"buckets"</span>: [</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"key"</span>: <span class="string">"10000"</span>,</div><div class="line">                    <span class="attr">"doc_count"</span>: <span class="number">10</span>,</div><div class="line">                    <span class="attr">"g2"</span>: &#123;</div><div class="line">                        <span class="attr">"value"</span>: <span class="number">2</span></div><div class="line">                    &#125;</div><div class="line">                &#125;,</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"key"</span>: <span class="string">"10002"</span>,</div><div class="line">                    <span class="attr">"doc_count"</span>: <span class="number">9</span>,</div><div class="line">                    <span class="attr">"g2"</span>: &#123;</div><div class="line">                        <span class="attr">"value"</span>: <span class="number">1</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            ]</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中“aggregations.g1.buckets”数组中就是获取的数据。key为app_id的值，doc_count为总数，g2.value为独立的device_id的数。</p>
+<ul>
+<li>功能分析</li>
+</ul>
+<p><em>ElasticSearch</em>的aggregations功能能够嵌套使用，能够实现多“字段”的<em>group by</em>统计查询，虽然功能行较弱，但的确能够完成一些场景的<strong>统计需求</strong>。</p>
 
           
         
@@ -687,6 +874,10 @@
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -725,7 +916,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -733,7 +924,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -742,7 +933,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
