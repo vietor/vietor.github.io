@@ -256,6 +256,158 @@
             
               
                 
+                <a class="post-title-link" href="/2016/how-easy-to-setup-hbase-fully-distributed.html" itemprop="url">
+                  How easy to setup HBase Fully-distributed
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-26T21:38:07+08:00" content="2016-07-26">
+              2016-07-26
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/how-easy-to-setup-hbase-fully-distributed.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/how-easy-to-setup-hbase-fully-distributed.html" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>HBase</strong> is a NoSQL database under <strong>Hadoop</strong></p>
+<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
+<li>Three installed jdk’s linux server.<br>Demo HBase server ip was 192.168.200.1, 192.168.200.2, 192.168.200.3.<br>Used existing HDFS server ip was 192.168.100.1.<br>Used existing Zookeeper server ip was 192.168.100.2.  </li>
+<li>Download HBase 1.2.x from <a href="http://hbase.apache.org/" target="_blank" rel="external">hbase.apache.org</a></li>
+<li>Extract Hbase’s package file to /opt and create a symlink name with /opt/hbase</li>
+<li>Always in /opt/hbase for working</li>
+</ul>
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><h3 id="Master-192-168-200-1"><a href="#Master-192-168-200-1" class="headerlink" title="Master (192.168.200.1)"></a>Master (192.168.200.1)</h3><ul>
+<li>Modify file conf/hbase-site.xml</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.100.1:8020/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.100.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="RegionServer-192-168-200-2-3"><a href="#RegionServer-192-168-200-2-3" class="headerlink" title="RegionServer (192.168.200.2/3)"></a>RegionServer (192.168.200.2/3)</h3><ul>
+<li>Modify file conf/hbase-site.xml</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.100.1:8020/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.100.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>hbase.regionserver.hostname set real ip address with itself, don’t try the hostname.</p>
+<h2 id="Startup-amp-Shutdown"><a href="#Startup-amp-Shutdown" class="headerlink" title="Startup &amp; Shutdown"></a>Startup &amp; Shutdown</h2><h3 id="Master"><a href="#Master" class="headerlink" title="Master"></a>Master</h3><ul>
+<li>Start</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/hbase-daemon.sh start master</div></pre></td></tr></table></figure>
+<ul>
+<li>Stop</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/hbase-daemon.sh stop master</div></pre></td></tr></table></figure>
+<h3 id="RegionServer"><a href="#RegionServer" class="headerlink" title="RegionServer"></a>RegionServer</h3><ul>
+<li>Start</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/hbase-daemon.sh start regionserver</div></pre></td></tr></table></figure>
+<ul>
+<li>Stop</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/hbase-daemon.sh stop regionserver</div></pre></td></tr></table></figure>
+<h2 id="Web-interface"><a href="#Web-interface" class="headerlink" title="Web interface"></a>Web interface</h2><p>Open <a href="http://192.168.200.1:16010" target="_blank" rel="external">http://192.168.200.1:16010</a> in web browser, enjoy it.</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/once-remove-redis-unused-keys.html" itemprop="url">
                   一次清理Redis中多余的Key的操作过程
                 </a>
@@ -775,148 +927,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/groupby-in-elasticsearch.html" itemprop="url">
-                  在ElasticSearch中使用类似GroupBy统计功能
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-07T14:20:00+08:00" content="2016-04-07">
-              2016-04-07
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/bigdata/" itemprop="url" rel="index">
-                    <span itemprop="name">bigdata</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/groupby-in-elasticsearch.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/groupby-in-elasticsearch.html" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>ElasticSarch</strong>提供了一些基本的聚合统计功能。</p>
-<p><strong>group by</strong>类似的功能，可以使用<strong>aggregations</strong>实现。下面的样例描述了一种通过API调用次数作为<strong>“某类用户行为DAU”</strong>的方法。</p>
-<ul>
-<li><p>数据样本</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"@timestamp"</span>: <span class="string">"2016-03-14T18:41:36+08:00"</span>,</div><div class="line">    <span class="attr">"@version"</span>: <span class="string">"1"</span>,</div><div class="line">    <span class="attr">"@fields"</span>: &#123;</div><div class="line">        <span class="attr">"uri"</span>: <span class="string">"/3/query/first"</span>,</div><div class="line">        <span class="attr">"device_id"</span>: <span class="string">"108ccf09983e5db88a2d5085e0805195f891e449"</span>,</div><div class="line">        <span class="attr">"app_id"</span>: <span class="string">"1000"</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>聚合需求</p>
-</li>
-</ul>
-<p>将uri为“/3/query/first”的请求，统计出不同app_id中独立deivce_id的访问次数</p>
-<ul>
-<li>请求实例</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"size"</span>: <span class="number">0</span>,</div><div class="line">    <span class="attr">"query"</span>: &#123;</div><div class="line">        <span class="attr">"bool"</span>: &#123;</div><div class="line">            <span class="attr">"must"</span>: [</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"term"</span>: &#123;</div><div class="line">                        <span class="attr">"@fields.uri"</span>: <span class="string">"/3/query/first"</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            ]</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"aggregations"</span>: &#123;</div><div class="line">        <span class="attr">"g1"</span>: &#123;</div><div class="line">            <span class="attr">"terms"</span>: &#123;</div><div class="line">                <span class="attr">"field"</span>: <span class="string">"@fields.app_id"</span></div><div class="line">            &#125;,</div><div class="line">            <span class="attr">"aggregations"</span>: &#123;</div><div class="line">                <span class="attr">"g2"</span>: &#123;</div><div class="line">                    <span class="attr">"cardinality"</span>: &#123;</div><div class="line">                        <span class="attr">"field"</span>: <span class="string">"@fields.device_id"</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ul>
-<li>返回实例</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"took"</span>: <span class="number">696</span>,</div><div class="line">    <span class="attr">"timed_out"</span>: <span class="literal">false</span>,</div><div class="line">    <span class="attr">"_shards"</span>: &#123;</div><div class="line">        <span class="attr">"total"</span>: <span class="number">6</span>,</div><div class="line">        <span class="attr">"successful"</span>: <span class="number">6</span>,</div><div class="line">        <span class="attr">"failed"</span>: <span class="number">0</span></div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"hits"</span>: &#123;</div><div class="line">        <span class="attr">"total"</span>: <span class="number">26</span>,</div><div class="line">        <span class="attr">"max_score"</span>: <span class="number">0</span>,</div><div class="line">        <span class="attr">"hits"</span>: []</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"aggregations"</span>: &#123;</div><div class="line">        <span class="attr">"g1"</span>: &#123;</div><div class="line">            <span class="attr">"doc_count_error_upper_bound"</span>: <span class="number">0</span>,</div><div class="line">            <span class="attr">"sum_other_doc_count"</span>: <span class="number">0</span>,</div><div class="line">            <span class="attr">"buckets"</span>: [</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"key"</span>: <span class="string">"10000"</span>,</div><div class="line">                    <span class="attr">"doc_count"</span>: <span class="number">10</span>,</div><div class="line">                    <span class="attr">"g2"</span>: &#123;</div><div class="line">                        <span class="attr">"value"</span>: <span class="number">2</span></div><div class="line">                    &#125;</div><div class="line">                &#125;,</div><div class="line">                &#123;</div><div class="line">                    <span class="attr">"key"</span>: <span class="string">"10002"</span>,</div><div class="line">                    <span class="attr">"doc_count"</span>: <span class="number">9</span>,</div><div class="line">                    <span class="attr">"g2"</span>: &#123;</div><div class="line">                        <span class="attr">"value"</span>: <span class="number">1</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            ]</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其中“aggregations.g1.buckets”数组中就是获取的数据。key为app_id的值，doc_count为总数，g2.value为独立的device_id的数。</p>
-<ul>
-<li>功能分析</li>
-</ul>
-<p><em>ElasticSearch</em>的aggregations功能能够嵌套使用，能够实现多“字段”的<em>group by</em>统计查询，虽然功能行较弱，但的确能够完成一些场景的<strong>统计需求</strong>。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -962,7 +972,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -979,7 +989,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
