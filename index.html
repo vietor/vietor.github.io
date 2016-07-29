@@ -57,7 +57,7 @@
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="//fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -198,22 +198,22 @@
         </li>
       
         
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
         <li class="menu-item menu-item-tags">
           <a href="/tags" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -326,7 +326,7 @@
       
         
           
-            <p><strong>HBase</strong> is a NoSQL database under <strong>Hadoop</strong></p>
+            <p><strong>HBase</strong> is a NoSQL under <strong>Hadoop</strong>.</p>
 <h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
 <li>Three installed jdk’s linux server.<br>Demo HBase server ip was 192.168.200.1, 192.168.200.2, 192.168.200.3.<br>Used existing HDFS server ip was 192.168.100.1.<br>Used existing Zookeeper server ip was 192.168.100.2.  </li>
 <li>Download HBase 1.2.x from <a href="http://hbase.apache.org/" target="_blank" rel="external">hbase.apache.org</a></li>
@@ -360,6 +360,13 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/hbase-daemon.sh stop regionserver</div></pre></td></tr></table></figure>
 <h2 id="Web-interface"><a href="#Web-interface" class="headerlink" title="Web interface"></a>Web interface</h2><p>Open <a href="http://192.168.200.1:16010" target="_blank" rel="external">http://192.168.200.1:16010</a> in web browser, enjoy it.</p>
+<h2 id="Phoenix-Installed"><a href="#Phoenix-Installed" class="headerlink" title="Phoenix Installed"></a>Phoenix Installed</h2><p><strong>Phoenix</strong> is a SQL wapper for <strong>HBase</strong>.</p>
+<ul>
+<li>Download phoenix-[version]-bin.tar.gz from <a href="https://phoenix.apache.org/download.html" target="_blank" rel="external">phoenix.apache.org</a></li>
+<li>Extract phoenix-[version]-server.jar and <strong>Copy</strong> it to ‘/opt/hbase/lib’ directory in <strong>All HBase instance</strong></li>
+<li>Restart Add HBase instance.</li>
+<li>How to usage it? <a href="http://phoenix.apache.org/Phoenix-in-15-minutes-or-less.html" target="_blank" rel="external">Click here</a></li>
+</ul>
 
           
         
@@ -990,7 +997,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1005,6 +1012,12 @@
         </div>
 
         
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
         
 
         
