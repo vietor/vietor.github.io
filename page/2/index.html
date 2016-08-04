@@ -256,6 +256,142 @@
             
               
                 
+                <a class="post-title-link" href="/2016/storagelevel-in-spark.html" itemprop="url">
+                  理解StorageLevel在Spark中的使用场景
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-08T09:30:08+08:00" content="2016-04-08">
+              2016-04-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/storagelevel-in-spark.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/storagelevel-in-spark.html" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>RDD提供的对象持久化方法</p>
+<h2 id="cache"><a href="#cache" class="headerlink" title="cache()"></a>cache()</h2><p>将对象存储在<em>内存</em>中。</p>
+<h2 id="persist-StorageLevel"><a href="#persist-StorageLevel" class="headerlink" title="persist(StorageLevel)"></a>persist(StorageLevel)</h2><p>通过<em>StorageLevel</em>参数指定的行为存储对象。</p>
+<h2 id="unpersist"><a href="#unpersist" class="headerlink" title="unpersist()"></a>unpersist()</h2><p>释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。</p>
+<h1 id="StorageLevel场景"><a href="#StorageLevel场景" class="headerlink" title="StorageLevel场景"></a>StorageLevel场景</h1><h2 id="MEMORY-ONLY"><a href="#MEMORY-ONLY" class="headerlink" title="MEMORY_ONLY"></a>MEMORY_ONLY</h2><p>对象存储在<em>内存</em>中，如果内存不足将出现<em>OutOfMemory</em>的错误。</p>
+<h2 id="MEMORY-AND-DISK"><a href="#MEMORY-AND-DISK" class="headerlink" title="MEMORY_AND_DISK"></a>MEMORY_AND_DISK</h2><p>对象存储在<em>内存</em>中，如果内存不足，将数据存放到<em>磁盘</em>上。这是我最常用的方式，因为能够以较低的内存需求来架设Hadoop集群。</p>
+<h2 id="MEMORY-ONLY-SER"><a href="#MEMORY-ONLY-SER" class="headerlink" title="MEMORY_ONLY_SER"></a>MEMORY_ONLY_SER</h2><p>转换为<em>字节数组</em>的对象存储, 相对于<em>MEMORY_ONLY</em>省点空间，多消耗点CPU。</p>
+<h2 id="MEMORY-AND-DISK-SER"><a href="#MEMORY-AND-DISK-SER" class="headerlink" title="MEMORY_AND_DISK_SER"></a>MEMORY_AND_DISK_SER</h2><p>转换为<em>字节数组</em>的对象存储，相对于<em>MEMORY_AND_DISK</em>省点空间，多消耗点CPU。</p>
+<h2 id="DISK-ONLY"><a href="#DISK-ONLY" class="headerlink" title="DISK_ONLY"></a>DISK_ONLY</h2><p>对象存储在<em>磁盘</em>中,只有<em>被处理</em>的对象才会被<em>读入</em>到<em>内存</em>中。这个好省内存，但速度是最慢的了。</p>
+<h1 id="一些经验点"><a href="#一些经验点" class="headerlink" title="一些经验点"></a>一些经验点</h1><h2 id="OutOfMemory错误"><a href="#OutOfMemory错误" class="headerlink" title="OutOfMemory错误"></a>OutOfMemory错误</h2><ul>
+<li>适当加大–executor-memory参数值</li>
+<li>如果可能，尽量仅适用MEMORY_AND_DISK方式存储</li>
+</ul>
+<h2 id="定时清理垃圾文件"><a href="#定时清理垃圾文件" class="headerlink" title="定时清理垃圾文件"></a>定时清理垃圾文件</h2><ul>
+<li>HDFS中<em>用户</em>的/tmp目录，Spark不会主动删除</li>
+<li>Yarn中任务的日志目录，通常日志级别设置为WARN</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/groupby-in-elasticsearch.html" itemprop="url">
                   在ElasticSearch中使用类似GroupBy统计功能
                 </a>
@@ -737,182 +873,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/how-easy-to-setup-yarn-cluster.html" itemprop="url">
-                  How easy to setup YARN cluster
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-07-31T14:38:47+08:00" content="2015-07-31">
-              2015-07-31
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/bigdata/" itemprop="url" rel="index">
-                    <span itemprop="name">bigdata</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/how-easy-to-setup-yarn-cluster.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/how-easy-to-setup-yarn-cluster.html" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>YARN</strong> is a task execute system for <strong>Hadoop</strong></p>
-<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
-<li>Three installed jdk’s linux server.<br>Demo YARN server ip was 192.168.200.1, 192.168.200.2, 192.168.200.3.<br>Used existing HDFS server ip was 192.168.100.1.</li>
-<li>Download hadoop 2.6.x from <a href="http://hadoop.apache.org/releases.html#Download" target="_blank" rel="external">hadoop.apache.org</a></li>
-<li>Extract hadoop’s package file to /opt and create a symlink name with /opt/hadoop</li>
-<li>Always in /opt/hadoop for working</li>
-</ul>
-<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><h3 id="Global-all-server"><a href="#Global-all-server" class="headerlink" title="Global (all server)"></a>Global (all server)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mkdir /yarn</div><div class="line">$ mkdir /yarn/logs</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-env.sh</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">export</span> YARN_LOG_DIR=/yarn/logs</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/core-site.xml</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.default.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.100.1:8020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">final</span>&gt;</span>true<span class="tag">&lt;/<span class="name">final</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="ResourceManager-192-168-200-1"><a href="#ResourceManager-192-168-200-1" class="headerlink" title="ResourceManager (192.168.200.1)"></a>ResourceManager (192.168.200.1)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /yarn/recovery</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.recovery.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.fs.state-store.uri<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/yarn/recovery<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="NodeManager-192-168-200-2-3"><a href="#NodeManager-192-168-200-2-3" class="headerlink" title="NodeManager (192.168.200.2/3)"></a>NodeManager (192.168.200.2/3)</h3><ul>
-<li>Create target directory</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /yarn/recovery</div></pre></td></tr></table></figure>
-<ul>
-<li>Modify file etc/hadoop/yarn-site.xml (192.168.200.2)</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.200.2<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>$&#123;yarn.nodemanager.hostname&#125;:8048<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.recovery.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.recovery.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">value</span>&gt;</span>/yarn/recovery<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>dfs.nodemanager.hostname set real ip address with itself, don’t try the hostname.</p>
-<h2 id="Startup-amp-Shutdown"><a href="#Startup-amp-Shutdown" class="headerlink" title="Startup &amp; Shutdown"></a>Startup &amp; Shutdown</h2><h3 id="ResourceManager"><a href="#ResourceManager" class="headerlink" title="ResourceManager"></a>ResourceManager</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop start resourcemanager</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop stop resourcemanager</div></pre></td></tr></table></figure>
-<h3 id="NodeManager"><a href="#NodeManager" class="headerlink" title="NodeManager"></a>NodeManager</h3><ul>
-<li>Start</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop start nodemanager</div></pre></td></tr></table></figure>
-<ul>
-<li>Stop</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./sbin/yarn-daemon.sh --config ./etc/hadoop stop nodemanager</div></pre></td></tr></table></figure>
-<h2 id="Web-interface"><a href="#Web-interface" class="headerlink" title="Web interface"></a>Web interface</h2><p>Open <a href="http://192.168.200.1:8080" target="_blank" rel="external">http://192.168.200.1:8080</a> in web browser, enjoy it.</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -958,7 +918,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -975,7 +935,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -256,6 +256,178 @@
             
               
                 
+                <a class="post-title-link" href="/2016/how-easy-to-setup-kafka.html" itemprop="url">
+                  How easy to setup Kafka
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-04T20:38:07+08:00" content="2016-08-04">
+              2016-08-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/how-easy-to-setup-kafka.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/how-easy-to-setup-kafka.html" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>Kafka</strong> is a Runtime Message Queue.</p>
+<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><ul>
+<li>Three installed jdk’s linux server.<br>Demo Kafka server ip was 192.168.200.1, 192.168.200.2, 192.168.200.3.<br>Used existing Zookeeper server ip was 192.168.100.2.  </li>
+<li>Download Kafka 0.9.x from <a href="http://kafka.apache.org/downloads.html" target="_blank" rel="external">kafka.apache.org</a></li>
+<li>Extract Hbase’s package file to /opt and create a symlink name with /opt/kafka</li>
+<li>Always in /opt/kafka for working</li>
+</ul>
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><h3 id="Global-all-server"><a href="#Global-all-server" class="headerlink" title="Global (all server)"></a>Global (all server)</h3><ul>
+<li>Create target directory</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir /kafka</div></pre></td></tr></table></figure>
+<ul>
+<li>Modify file config/server.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">port=9092</div><div class="line">log.dirs=/kafka</div><div class="line">zookeeper.connect=192.168.100.2:2181/kafka</div></pre></td></tr></table></figure>
+<h3 id="Node-192-168-200-1"><a href="#Node-192-168-200-1" class="headerlink" title="Node (192.168.200.1)"></a>Node (192.168.200.1)</h3><ul>
+<li>Modify file config/server.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">broker.id=1</div><div class="line">advertised.host.name=192.168.200.1</div></pre></td></tr></table></figure>
+<h3 id="Node-192-168-200-2"><a href="#Node-192-168-200-2" class="headerlink" title="Node (192.168.200.2)"></a>Node (192.168.200.2)</h3><ul>
+<li>Modify file config/server.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">broker.id=2</div><div class="line">advertised.host.name=192.168.200.2</div></pre></td></tr></table></figure>
+<h3 id="Node-192-168-200-3"><a href="#Node-192-168-200-3" class="headerlink" title="Node (192.168.200.3)"></a>Node (192.168.200.3)</h3><ul>
+<li>Modify file config/server.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">broker.id=3</div><div class="line">advertised.host.name=192.168.200.3</div></pre></td></tr></table></figure>
+<h2 id="Startup-amp-Shutdown"><a href="#Startup-amp-Shutdown" class="headerlink" title="Startup &amp; Shutdown"></a>Startup &amp; Shutdown</h2><ul>
+<li>Start</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-server-start.sh config/server.properties</div></pre></td></tr></table></figure>
+<ul>
+<li>Stop</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-server-stop.sh config/server.properties</div></pre></td></tr></table></figure>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="Create-Topic"><a href="#Create-Topic" class="headerlink" title="Create Topic"></a>Create Topic</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-topics.sh --zookeeper=192.168.100.2:2181/kafka --create --topic <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<h3 id="Send-Message-To-Topic-Test"><a href="#Send-Message-To-Topic-Test" class="headerlink" title="Send Message To Topic (Test)"></a>Send Message To Topic (Test)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-console-producer.sh --broker-list=192.168.200.1:9092,192.168.200.2:9092,192.168.200.3:9092 --topic=<span class="built_in">test</span></div></pre></td></tr></table></figure>
+<h3 id="Receive-Message-From-Topic-Test"><a href="#Receive-Message-From-Topic-Test" class="headerlink" title="Receive Message From Topic (Test)"></a>Receive Message From Topic (Test)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-console-consumer.sh --zookeeper=192.168.100.2:2181/kafka --topic=<span class="built_in">test</span></div></pre></td></tr></table></figure>
+<h2 id="Mirror-Server"><a href="#Mirror-Server" class="headerlink" title="Mirror Server"></a>Mirror Server</h2><h3 id="Environment-1"><a href="#Environment-1" class="headerlink" title="Environment"></a>Environment</h3><ul>
+<li>Mirror Server ip was 192.168.200.10</li>
+<li>The Kafka2 server group<br>Zookeeper: 192.168.100.2:2181/kafka2<br>Demo server ip was 192.168.200.11,192.168.200.12,192.168.20.13  </li>
+<li>Install to /opt/kafka, and configure it.</li>
+<li>Data stream copy from kafka to kafka2</li>
+</ul>
+<h3 id="Configuration-1"><a href="#Configuration-1" class="headerlink" title="Configuration"></a>Configuration</h3><ul>
+<li>Modify file config/consumer.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zookeeper.connect=192.168.100.2:2181/kafka</div></pre></td></tr></table></figure>
+<ul>
+<li>Modify file config/producer.properties</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">bootstrap.servers=192.168.200.11:9092,192.168.200.12:9092,192.168.200.13:9092</div><div class="line">metadata.broker.list=192.168.200.11:9092,192.168.200.12:9092,192.168.200.13:9092</div></pre></td></tr></table></figure>
+<h3 id="Startup"><a href="#Startup" class="headerlink" title="Startup"></a>Startup</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./bin/kafka-mirror-maker.sh --consumer.config=config/consumer.properties --producer.config=config/producer.properties --blacklist=<span class="string">'ignore*'</span></div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/how-easy-to-setup-hbase-fully-distributed.html" itemprop="url">
                   How easy to setup HBase Fully-distributed
                 </a>
@@ -368,13 +540,15 @@
 <ul>
 <li>Download phoenix-[version]-bin.tar.gz from <a href="https://phoenix.apache.org/download.html" target="_blank" rel="external">phoenix.apache.org</a></li>
 <li>Extract phoenix-[version]-server.jar and <strong>Copy</strong> it to ‘/opt/hbase/lib’ directory in <strong>All HBase instance</strong></li>
-<li>Restart Add HBase instance.</li>
-<li>How to usage it? <a href="http://phoenix.apache.org/Phoenix-in-15-minutes-or-less.html" target="_blank" rel="external">Click here</a></li>
 </ul>
 <h3 id="Configuration-1"><a href="#Configuration-1" class="headerlink" title="Configuration"></a>Configuration</h3><ul>
 <li>Modify file conf/hbase-site.xml</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.table.sanity.checks<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h3><ul>
+<li>Restart All HBase instance after installed.</li>
+<li>How to connect it? <a href="http://phoenix.apache.org/Phoenix-in-15-minutes-or-less.html" target="_blank" rel="external">Click here</a></li>
+</ul>
 
           
         
@@ -807,142 +981,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/storagelevel-in-spark.html" itemprop="url">
-                  理解StorageLevel在Spark中的使用场景
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-08T09:30:08+08:00" content="2016-04-08">
-              2016-04-08
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/bigdata/" itemprop="url" rel="index">
-                    <span itemprop="name">bigdata</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/storagelevel-in-spark.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/storagelevel-in-spark.html" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>RDD提供的对象持久化方法</p>
-<h2 id="cache"><a href="#cache" class="headerlink" title="cache()"></a>cache()</h2><p>将对象存储在<em>内存</em>中。</p>
-<h2 id="persist-StorageLevel"><a href="#persist-StorageLevel" class="headerlink" title="persist(StorageLevel)"></a>persist(StorageLevel)</h2><p>通过<em>StorageLevel</em>参数指定的行为存储对象。</p>
-<h2 id="unpersist"><a href="#unpersist" class="headerlink" title="unpersist()"></a>unpersist()</h2><p>释放掉存储的对象。并非强制释放，仅仅进行了标记可以被GC掉。</p>
-<h1 id="StorageLevel场景"><a href="#StorageLevel场景" class="headerlink" title="StorageLevel场景"></a>StorageLevel场景</h1><h2 id="MEMORY-ONLY"><a href="#MEMORY-ONLY" class="headerlink" title="MEMORY_ONLY"></a>MEMORY_ONLY</h2><p>对象存储在<em>内存</em>中，如果内存不足将出现<em>OutOfMemory</em>的错误。</p>
-<h2 id="MEMORY-AND-DISK"><a href="#MEMORY-AND-DISK" class="headerlink" title="MEMORY_AND_DISK"></a>MEMORY_AND_DISK</h2><p>对象存储在<em>内存</em>中，如果内存不足，将数据存放到<em>磁盘</em>上。这是我最常用的方式，因为能够以较低的内存需求来架设Hadoop集群。</p>
-<h2 id="MEMORY-ONLY-SER"><a href="#MEMORY-ONLY-SER" class="headerlink" title="MEMORY_ONLY_SER"></a>MEMORY_ONLY_SER</h2><p>转换为<em>字节数组</em>的对象存储, 相对于<em>MEMORY_ONLY</em>省点空间，多消耗点CPU。</p>
-<h2 id="MEMORY-AND-DISK-SER"><a href="#MEMORY-AND-DISK-SER" class="headerlink" title="MEMORY_AND_DISK_SER"></a>MEMORY_AND_DISK_SER</h2><p>转换为<em>字节数组</em>的对象存储，相对于<em>MEMORY_AND_DISK</em>省点空间，多消耗点CPU。</p>
-<h2 id="DISK-ONLY"><a href="#DISK-ONLY" class="headerlink" title="DISK_ONLY"></a>DISK_ONLY</h2><p>对象存储在<em>磁盘</em>中,只有<em>被处理</em>的对象才会被<em>读入</em>到<em>内存</em>中。这个好省内存，但速度是最慢的了。</p>
-<h1 id="一些经验点"><a href="#一些经验点" class="headerlink" title="一些经验点"></a>一些经验点</h1><h2 id="OutOfMemory错误"><a href="#OutOfMemory错误" class="headerlink" title="OutOfMemory错误"></a>OutOfMemory错误</h2><ul>
-<li>适当加大–executor-memory参数值</li>
-<li>如果可能，尽量仅适用MEMORY_AND_DISK方式存储</li>
-</ul>
-<h2 id="定时清理垃圾文件"><a href="#定时清理垃圾文件" class="headerlink" title="定时清理垃圾文件"></a>定时清理垃圾文件</h2><ul>
-<li>HDFS中<em>用户</em>的/tmp目录，Spark不会主动删除</li>
-<li>Yarn中任务的日志目录，通常日志级别设置为WARN</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -988,7 +1026,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1005,7 +1043,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
