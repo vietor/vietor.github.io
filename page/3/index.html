@@ -230,6 +230,126 @@
             
               
                 
+                <a class="post-title-link" href="/2016/nodejs-post-file-qiniu.html" itemprop="url">
+                  NodeJS中直接使用POST上传文件到七牛
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-04T10:10:00+08:00" content="2016-04-04">
+              2016-04-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/program/" itemprop="url" rel="index">
+                    <span itemprop="name">program</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/nodejs-post-file-qiniu.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/nodejs-post-file-qiniu.html" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>),</div><div class="line">    path = <span class="built_in">require</span>(<span class="string">'path'</span>),</div><div class="line">    crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</div><div class="line"><span class="keyword">var</span> xbase64 = <span class="built_in">require</span>(<span class="string">'xbase64'</span>);</div><div class="line"><span class="keyword">var</span> request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hmac_sha1</span>(<span class="params">content, secret</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> crypto.createHmac(<span class="string">'sha1'</span>, secret).update(content).digest();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">uploadToQiniu</span>(<span class="params">config, filename, filepath, callback</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!filename)</div><div class="line">        filename = path.basename(filepath);</div><div class="line">    <span class="keyword">var</span> putPolicy = &#123;</div><div class="line">        scope: config.bucket + <span class="string">':'</span> + filename,</div><div class="line">        deadline: <span class="built_in">Math</span>.floor(<span class="built_in">Date</span>.now() / <span class="number">1000</span>) + <span class="number">3600</span>,</div><div class="line">        returnBody: <span class="string">"&#123;&#125;"</span></div><div class="line">    &#125;;</div><div class="line">    <span class="keyword">var</span> encodedPutPolicy = xbase64.urlencode(<span class="built_in">JSON</span>.stringify(putPolicy));</div><div class="line">    <span class="keyword">var</span> encodedSign = xbase64.urlencode(hmac_sha1(encodedPutPolicy, config.secretKey));</div><div class="line">    <span class="keyword">var</span> formData = &#123;</div><div class="line">        key: filename,</div><div class="line">        file: fs.createReadStream(filepath),</div><div class="line">        token: config.accessKey + <span class="string">':'</span> + encodedSign + <span class="string">':'</span> + encodedPutPolicy</div><div class="line">    &#125;;</div><div class="line">    request.post(&#123;</div><div class="line">        url: config.url,</div><div class="line">        formData: formData</div><div class="line">    &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, resp, body</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (err)</div><div class="line">            callback(err);</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (resp.statusCode == <span class="number">200</span>)</div><div class="line">            callback(<span class="literal">null</span>);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            callback(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'status: '</span> + resp.statusCode) + <span class="string">', message: '</span> + <span class="built_in">JSON</span>.parse(body).error);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">uploadToQiniu(&#123;</div><div class="line">    url: <span class="string">'http://upload.qiniu.com/'</span>,</div><div class="line">    bucket: <span class="string">'空间名'</span>,</div><div class="line">    accessKey: <span class="string">'访问KEY (AK)'</span>,</div><div class="line">    secretKey: <span class="string">'安全KEY (SK)'</span></div><div class="line">&#125;, <span class="string">''</span>, <span class="string">'d:\\dollar.jpg'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(err);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/how-easy-to-setup-yarn-cluster.html" itemprop="url">
                   How easy to setup YARN cluster
                 </a>
@@ -735,7 +855,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

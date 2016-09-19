@@ -44,7 +44,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="technology" />
+  <meta name="keywords" content="redis," />
 
 
 
@@ -60,19 +60,34 @@
 
 
 
-<meta name="description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://roteiv.com/about/index.html">
+<meta name="description" content="在我们的一个系统中，一个Redis存储KEY的TTL设置为5年，但后期内存压力较大需要清理较久的数据。根据业务逻辑的特性，确定删除TTL有效期小于4年的KEY（即，创建时间超过1年）。
+将Redis的rdb文件导出通常有两种方案：
+
+直接使用copy命令复制dump.rdb文件；
+通过redis-cli的–rdb命令导出。
+
+将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
+<meta property="og:type" content="article">
+<meta property="og:title" content="再一次清理Redis中多余的Key的操作过程">
+<meta property="og:url" content="http://roteiv.com/2016/twice-remove-redis-unused-keys.html">
 <meta property="og:site_name" content="Roteiv Talking">
-<meta property="og:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
-<meta property="og:updated_time" content="2016-07-25T10:19:31.000Z">
+<meta property="og:description" content="在我们的一个系统中，一个Redis存储KEY的TTL设置为5年，但后期内存压力较大需要清理较久的数据。根据业务逻辑的特性，确定删除TTL有效期小于4年的KEY（即，创建时间超过1年）。
+将Redis的rdb文件导出通常有两种方案：
+
+直接使用copy命令复制dump.rdb文件；
+通过redis-cli的–rdb命令导出。
+
+将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
+<meta property="og:updated_time" content="2016-09-19T07:19:43.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="ProfileName: Vietor LiuEmail: try it in gmail, “point” is the point.
-LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
+<meta name="twitter:title" content="再一次清理Redis中多余的Key的操作过程">
+<meta name="twitter:description" content="在我们的一个系统中，一个Redis存储KEY的TTL设置为5年，但后期内存压力较大需要清理较久的数据。根据业务逻辑的特性，确定删除TTL有效期小于4年的KEY（即，创建时间超过1年）。
+将Redis的rdb文件导出通常有两种方案：
+
+直接使用copy命令复制dump.rdb文件；
+通过redis-cli的–rdb命令导出。
+
+将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
 
 
 
@@ -93,9 +108,9 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
 
 
-  <link rel="canonical" href="http://roteiv.com/about/"/>
+  <link rel="canonical" href="http://roteiv.com/2016/twice-remove-redis-unused-keys.html"/>
 
-  <title> about | Roteiv Talking </title>
+  <title> 再一次清理Redis中多余的Key的操作过程 | Roteiv Talking </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -234,7 +249,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
             
             
               
-                about
+                再一次清理Redis中多余的Key的操作过程
               
             
           </h1>
@@ -246,19 +261,38 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-06T10:17:07+08:00" content="2015-11-06">
-              2015-11-06
+            <time itemprop="dateCreated" datetime="2016-09-19T17:29:43+08:00" content="2016-09-19">
+              2016-09-19
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/bigdata/" itemprop="url" rel="index">
+                    <span itemprop="name">bigdata</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/about/index.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="about/index.html" itemprop="commentsCount"></span>
+                <a href="/2016/twice-remove-redis-unused-keys.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/twice-remove-redis-unused-keys.html" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -281,8 +315,17 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
       
 
       
-        <h1 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h1><p><em>Name</em>: Vietor Liu<br><em>Email</em>: try it in gmail, “point” is the point.</p>
-<h1 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h1><p><em>Github</em>: <a href="https://github.com/vietor" target="_blank" rel="external">https://github.com/vietor</a><br><em>Twitter</em>: <a href="https://twitter.com/vietorliu" target="_blank" rel="external">https://twitter.com/vietorliu</a></p>
+        <p>在我们的一个系统中，一个Redis存储KEY的TTL设置为5年，但后期内存压力较大需要清理较久的数据。根据业务逻辑的特性，确定删除TTL有效期小于4年的KEY（即，创建时间超过1年）。</p>
+<h1 id="将Redis的rdb文件导出"><a href="#将Redis的rdb文件导出" class="headerlink" title="将Redis的rdb文件导出"></a>将Redis的rdb文件导出</h1><p>通常有两种方案：</p>
+<ul>
+<li>直接使用copy命令复制dump.rdb文件；</li>
+<li>通过redis-cli的–rdb命令导出。</li>
+</ul>
+<h1 id="将要删除的Key从rdb中导出来"><a href="#将要删除的Key从rdb中导出来" class="headerlink" title="将要删除的Key从rdb中导出来"></a>将要删除的Key从rdb中导出来</h1><p>需要首先安装<a href="https://github.com/LesTR/redis-rdb-tools" target="_blank" rel="external">redis-rdb-tools</a></p>
+<p>将带所有的KEY及TTL等信息导出到csv文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rdb --command memory dump.rdb &gt; usertoken_keys.csv</div></pre></td></tr></table></figure></p>
+<p>此时生成的CSV文件格式如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">database,<span class="built_in">type</span>,key,size_<span class="keyword">in</span>_bytes,encoding,num_elements,len_largest_element,ttl</div><div class="line">0,string,<span class="string">"kt.usertoken-C102685U46553459"</span>,237,string,86,86,130272503.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C102685U402255982"</span>,238,string,86,86,135267585.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C103439U432281392"</span>,238,string,86,86,148310228.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C103367U440243305"</span>,238,string,86,86,150836002.0</div></pre></td></tr></table></figure></p>
+<p>将CSV中TTL小于4年的KEY字段导出：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed <span class="string">'1d'</span> usertoken_keys.csv | awk -F<span class="string">','</span> <span class="string">'&#123;if($8 &lt; 126144000)&#123;gsub(/[:\"]/,"",$3); print $3&#125;&#125;'</span> &gt; rkeys.csv</div></pre></td></tr></table></figure></p>
+<p>此时生成的rkeys.txt文件中就包含所有的KEY，可通过写一个python程序读此文件完成实际的删除。生成文件内容样例：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">kt.usertoken-C102685U46553459</div><div class="line">kt.usertoken-C102685U402255982</div><div class="line">kt.usertoken-C101287U35606393</div><div class="line">kt.usertoken-C101675U404094112</div><div class="line">kt.usertoken-C101140U36998042</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -303,7 +346,27 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag">#redis</a>
+          
+        </div>
+      
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/how-easy-to-setup-kafka.html" rel="next" title="How easy to setup Kafka">
+                <i class="fa fa-chevron-left"></i> How easy to setup Kafka
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
@@ -315,10 +378,10 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="about/index.html"
-     data-title="about"
+        <div class="ds-share flat" data-thread-key="2016/twice-remove-redis-unused-keys.html"
+     data-title="再一次清理Redis中多余的Key的操作过程"
      data-content=""
-     data-url="http://roteiv.com/about/index.html">
+     data-url="http://roteiv.com/2016/twice-remove-redis-unused-keys.html">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -345,8 +408,8 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="about/index.html"
-           data-title="about" data-url="http://roteiv.com/about/index.html">
+      <div class="ds-thread" data-thread-key="2016/twice-remove-redis-unused-keys.html"
+           data-title="再一次清理Redis中多余的Key的操作过程" data-url="http://roteiv.com/2016/twice-remove-redis-unused-keys.html">
       </div>
     
   </div>
@@ -443,7 +506,7 @@ LinksGithub: https://github.com/vietorTwitter: https://twitter.com/vietorliu">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Profile"><span class="nav-number">1.</span> <span class="nav-text">Profile</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Links"><span class="nav-number">2.</span> <span class="nav-text">Links</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#将Redis的rdb文件导出"><span class="nav-number">1.</span> <span class="nav-text">将Redis的rdb文件导出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#将要删除的Key从rdb中导出来"><span class="nav-number">2.</span> <span class="nav-text">将要删除的Key从rdb中导出来</span></a></li></ol></div>
             
           </div>
         </section>
