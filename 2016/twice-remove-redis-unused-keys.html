@@ -66,7 +66,7 @@
 直接使用copy命令复制dump.rdb文件；
 通过redis-cli的–rdb命令导出。
 
-将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
+将要删除的Key从rdb中导出来需要首先手工安装LesTR 的 redi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="再一次清理Redis中多余的Key的操作过程">
 <meta property="og:url" content="http://roteiv.com/2016/twice-remove-redis-unused-keys.html">
@@ -77,8 +77,8 @@
 直接使用copy命令复制dump.rdb文件；
 通过redis-cli的–rdb命令导出。
 
-将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
-<meta property="og:updated_time" content="2016-09-19T07:19:43.000Z">
+将要删除的Key从rdb中导出来需要首先手工安装LesTR 的 redi">
+<meta property="og:updated_time" content="2016-09-19T07:41:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="再一次清理Redis中多余的Key的操作过程">
 <meta name="twitter:description" content="在我们的一个系统中，一个Redis存储KEY的TTL设置为5年，但后期内存压力较大需要清理较久的数据。根据业务逻辑的特性，确定删除TTL有效期小于4年的KEY（即，创建时间超过1年）。
@@ -87,7 +87,7 @@
 直接使用copy命令复制dump.rdb文件；
 通过redis-cli的–rdb命令导出。
 
-将要删除的Key从rdb中导出来需要首先安装redis-rdb-tool">
+将要删除的Key从rdb中导出来需要首先手工安装LesTR 的 redi">
 
 
 
@@ -321,7 +321,7 @@
 <li>直接使用copy命令复制dump.rdb文件；</li>
 <li>通过redis-cli的–rdb命令导出。</li>
 </ul>
-<h1 id="将要删除的Key从rdb中导出来"><a href="#将要删除的Key从rdb中导出来" class="headerlink" title="将要删除的Key从rdb中导出来"></a>将要删除的Key从rdb中导出来</h1><p>需要首先安装<a href="https://github.com/LesTR/redis-rdb-tools" target="_blank" rel="external">redis-rdb-tools</a></p>
+<h1 id="将要删除的Key从rdb中导出来"><a href="#将要删除的Key从rdb中导出来" class="headerlink" title="将要删除的Key从rdb中导出来"></a>将要删除的Key从rdb中导出来</h1><p>需要首先手工安装<a href="https://github.com/LesTR/redis-rdb-tools" target="_blank" rel="external">LesTR 的 redis-rdb-tools</a>.</p>
 <p>将带所有的KEY及TTL等信息导出到csv文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rdb --command memory dump.rdb &gt; usertoken_keys.csv</div></pre></td></tr></table></figure></p>
 <p>此时生成的CSV文件格式如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">database,<span class="built_in">type</span>,key,size_<span class="keyword">in</span>_bytes,encoding,num_elements,len_largest_element,ttl</div><div class="line">0,string,<span class="string">"kt.usertoken-C102685U46553459"</span>,237,string,86,86,130272503.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C102685U402255982"</span>,238,string,86,86,135267585.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C103439U432281392"</span>,238,string,86,86,148310228.0</div><div class="line">0,string,<span class="string">"kt.usertoken-C103367U440243305"</span>,238,string,86,86,150836002.0</div></pre></td></tr></table></figure></p>
 <p>将CSV中TTL小于4年的KEY字段导出：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed <span class="string">'1d'</span> usertoken_keys.csv | awk -F<span class="string">','</span> <span class="string">'&#123;if($8 &lt; 126144000)&#123;gsub(/[:\"]/,"",$3); print $3&#125;&#125;'</span> &gt; rkeys.csv</div></pre></td></tr></table></figure></p>
